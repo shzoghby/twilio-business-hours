@@ -1,0 +1,165 @@
+{
+    "description": "Business Hours Checker - Function",
+    "states": [
+      {
+        "name": "Trigger",
+        "type": "trigger",
+        "transitions": [
+          {
+            "next": "function_business_hours",
+            "event": "incomingMessage"
+          },
+          {
+            "event": "incomingCall"
+          },
+          {
+            "event": "incomingRequest"
+          },
+          {
+            "event": "incomingParent"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      },
+      {
+        "name": "function_business_hours",
+        "type": "run-function",
+        "transitions": [
+          {
+            "next": "split_isopen",
+            "event": "success"
+          },
+          {
+            "event": "fail"
+          }
+        ],
+        "properties": {
+          "service_sid": "ZS9254a7a735d812163e999748c18908c6",
+          "environment_sid": "ZEc473b09d4001d1e2610fe889b1d4249c",
+          "offset": {
+            "x": 110,
+            "y": 300
+          },
+          "function_sid": "ZHdd8d21d80acad2bb06b776e144873c31",
+          "parameters": [
+            {
+              "value": "Australia",
+              "key": "country"
+            },
+            {
+              "value": "Melbourne",
+              "key": "city"
+            },
+            {
+              "value": "9",
+              "key": "openHour"
+            },
+            {
+              "value": "17",
+              "key": "closeHour"
+            }
+          ],
+          "url": "https://twilio-business-hours-1279-development.twil.io/business-hours-function"
+        }
+      },
+      {
+        "name": "send_message_close",
+        "type": "send-message",
+        "transitions": [
+          {
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": 570,
+            "y": 970
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "Ahoy! Welcome to 'Business Hours Checker' Function. We are currently closed. \n\nOur openning hours today is: '{{widgets.function_business_hours.parsed. openHour}}:00 - {{widgets.function_business_hours.parsed. closeHour}}:00\n(Time Zone: '{{widgets.function_business_hours.parsed. timezone}})"
+        }
+      },
+      {
+        "name": "split_isopen",
+        "type": "split-based-on",
+        "transitions": [
+          {
+            "event": "noMatch"
+          },
+          {
+            "next": "send_message_open",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "If value equal_to true",
+                "arguments": [
+                  "{{widgets.function_business_hours.parsed. isOpen}}"
+                ],
+                "type": "equal_to",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "next": "send_message_close",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "If value equal_to false",
+                "arguments": [
+                  "{{widgets.function_business_hours.parsed. isOpen}}"
+                ],
+                "type": "equal_to",
+                "value": "false"
+              }
+            ]
+          }
+        ],
+        "properties": {
+          "input": "{{widgets.function_business_hours.parsed. isOpen}}",
+          "offset": {
+            "x": 20,
+            "y": 620
+          }
+        }
+      },
+      {
+        "name": "send_message_open",
+        "type": "send-message",
+        "transitions": [
+          {
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -300,
+            "y": 990
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "Ahoy! Welcome to 'Business Hours Checker' Function. We are currently open.\n\nOur openning hours today is {{widgets.function_business_hours.parsed. openHour}}:00 - {{widgets.function_business_hours.parsed. closeHour}}:00\n(Time Zone: {{widgets.function_business_hours.parsed. timezone}})"
+        }
+      }
+    ],
+    "initial_state": "Trigger",
+    "flags": {
+      "allow_concurrent_calls": true
+    }
+  }
