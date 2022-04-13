@@ -1,0 +1,22 @@
+{
+  "name": "twilio-business-hours",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "twilio-run",
+    "deploy": "twilio-run deploy"
+  },
+  "dependencies": {
+    "@twilio/runtime-handler": "1.2.2",
+    "moment-timezone": "^0.5.34",
+    "momentjs": "^2.0.0",
+    "twilio": "^3.56"
+  },
+  "devDependencies": {
+    "twilio-run": "^3.4.1"
+  },
+  "engines": {
+    "node": "12"
+  }
+}
