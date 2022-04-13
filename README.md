@@ -1,4 +1,4 @@
-# TWILIO Business Hours
+# Twilio Business Hours
 
 This Function checks if current time is within business hours or not.
 
